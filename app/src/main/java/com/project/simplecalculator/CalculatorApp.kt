@@ -8,35 +8,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.simplecalculator.ui.theme.MediumGray
 import com.project.simplecalculator.ui.theme.shade_of_orange
-import net.objecthunter.exp4j.ExpressionBuilder
 
 @Composable
-fun CalculatorApp() {
-    /*
-    State to save the shit
-     */
-    var result by remember {
-        mutableStateOf("")
-    }
-
+fun CalculatorApp(
+    viewModel: CalculatorViewModel
+) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -44,10 +31,10 @@ fun CalculatorApp() {
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
         ) {
-            var lineheight = MaterialTheme.typography.displayMedium.fontSize*4/3
+            val lineheight = MaterialTheme.typography.displayMedium.fontSize*4/3
             Text(
 
-                text = result,
+                text = viewModel.calculatorState.value.answer,
                 fontSize = 64.sp,
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.End,
@@ -77,7 +64,7 @@ fun CalculatorApp() {
                         .background(Color.Gray)
                         .weight(2f),
                     onClick = {
-                        result = ""
+                        viewModel.calculatorEvents(CalculatorEvents.AllClear)
                     },
                 )
                 CalculatorButton(
@@ -86,9 +73,7 @@ fun CalculatorApp() {
                         .background(Color.Gray)
                         .weight(1f),
                     onClick = {
-                        if (result.isNotEmpty()) {
-                            result = result.dropLast(1)
-                        }
+                        viewModel.calculatorEvents(CalculatorEvents.DeleteButton)
                     }
                 )
 
@@ -99,9 +84,7 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "/"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("/"))
                     }
                 )
             }
@@ -121,7 +104,7 @@ fun CalculatorApp() {
                         .background(color = MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "7"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("7"))
                     }
                 )
                 CalculatorButton(
@@ -130,7 +113,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "8"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("8"))
                     }
                 )
                 CalculatorButton(
@@ -139,7 +122,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "9"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("9"))
                     }
                 )
                 CalculatorButton(
@@ -148,9 +131,8 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "*"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("*"))
+
                     }
                 )
             }
@@ -171,7 +153,7 @@ fun CalculatorApp() {
                         .background(color = MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "4"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("4"))
                     }
                 )
                 CalculatorButton(
@@ -180,7 +162,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "5"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("5"))
                     }
                 )
                 CalculatorButton(
@@ -189,7 +171,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "6"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("6"))
                     }
                 )
                 CalculatorButton(
@@ -198,9 +180,7 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "-"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("-"))
                     }
                 )
             }
@@ -221,7 +201,7 @@ fun CalculatorApp() {
                         .background(color = MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "1"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("1"))
                     }
                 )
                 CalculatorButton(
@@ -230,7 +210,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "2"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("2"))
                     }
                 )
                 CalculatorButton(
@@ -239,7 +219,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "3"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("3"))
                     }
                 )
                 CalculatorButton(
@@ -248,9 +228,7 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "+"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("+"))
                     }
                 )
             }
@@ -272,7 +250,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(2f),
                     onClick = {
-                        result += "0"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("0"))
                     }
                 )
                 CalculatorButton(
@@ -281,12 +259,7 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) {
-                            return@CalculatorButton
-                        }
-
-                        if (result.lastOrNull() !in arrayOf('+', '-', '*', '.'))
-                            result += "."
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("."))
                     }
                 )
                 CalculatorButton(
@@ -295,29 +268,10 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) {
-                            // result.append("")
-                            return@CalculatorButton
-                        }
-                        if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/')) {
-                            result = Calculation(result)
-                        }
+                        viewModel.calculatorEvents(CalculatorEvents.EqualButton)
                     }
                 )
             }
         }
     }
-}
-
-@Preview(backgroundColor = 0)
-@Composable
-fun prevCalculator() {
-
-    CalculatorApp()
-}
-
-private fun Calculation(text: String): String {
-    val eval = ExpressionBuilder(text).build()
-    val res = eval.evaluate()
-    return res.toInt().toString()
 }
