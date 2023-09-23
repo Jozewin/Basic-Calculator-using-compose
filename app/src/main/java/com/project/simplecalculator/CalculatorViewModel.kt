@@ -63,7 +63,7 @@ class CalculatorViewModel : ViewModel() {
     }
 
     private fun isEqualClick(text: String): String {
-        if (text.isEmpty() || text.lastOrNull()!in arrayOf(
+        if (text.isEmpty() || text.lastOrNull()in arrayOf(
                 '+',
                 '-',
                 '*',
