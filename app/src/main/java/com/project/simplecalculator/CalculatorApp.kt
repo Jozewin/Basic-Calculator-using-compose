@@ -1,5 +1,6 @@
 package com.project.simplecalculator
 
+import android.hardware.ConsumerIrManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,27 +16,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.simplecalculator.ui.theme.MediumGray
 import com.project.simplecalculator.ui.theme.shade_of_orange
-import net.objecthunter.exp4j.ExpressionBuilder
 
 @Composable
-fun CalculatorApp() {
-    /*
-    State to save the shit
-     */
-    var result by remember {
-        mutableStateOf("")
-    }
+fun CalculatorApp(
+    viewModel: CalculatorViewModel,
+    irManager: ConsumerIrManager
+) {
 
+//    var authUnlock by remember {
+//        mutableStateOf("")
+//    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -44,16 +42,16 @@ fun CalculatorApp() {
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
         ) {
-            var lineheight = MaterialTheme.typography.displayMedium.fontSize*4/3
+            val lineheight = MaterialTheme.typography.displayMedium.fontSize * 4 / 3
             Text(
 
-                text = result,
+                text = viewModel.calculatorState.value.answer,
                 fontSize = 64.sp,
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .fillMaxWidth(),
-                 maxLines = 5,
+                maxLines = 5,
                 color = Color.White,
                 lineHeight = lineheight
             )
@@ -77,7 +75,20 @@ fun CalculatorApp() {
                         .background(Color.Gray)
                         .weight(2f),
                     onClick = {
-                        result = ""
+                        viewModel.calculatorEvents(CalculatorEvents.AllClear)
+
+//                        if (authUnlock == "10"){
+//                            val pattern = intArrayOf(
+//                                200,
+//                                400,
+//                                600,
+//                                800,
+//                                1000,
+//                                1200
+//                            ) // Example pattern, replace with your IR signal pattern
+//                            irManager.transmit(40000, pattern)
+//                        }
+
                     },
                 )
                 CalculatorButton(
@@ -86,9 +97,18 @@ fun CalculatorApp() {
                         .background(Color.Gray)
                         .weight(1f),
                     onClick = {
-                        if (result.isNotEmpty()) {
-                            result = result.dropLast(1)
-                        }
+                        viewModel.calculatorEvents(CalculatorEvents.DeleteButton)
+                        val pattern = intArrayOf(
+                            9000,
+                            4500,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            1690
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
 
@@ -99,9 +119,20 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "/"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("/"))
+                        val pattern = intArrayOf(
+                            9000,
+                            4500,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            1690,
+                            250,
+                            5000
+                        )  // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
             }
@@ -121,7 +152,18 @@ fun CalculatorApp() {
                         .background(color = MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "7"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("7"))
+                        val pattern = intArrayOf(
+                            9000,
+                            4500,
+                            560,
+                            1690,
+                            560,
+                            1690,
+                            560,
+                            560
+                        ) //ttern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -130,7 +172,22 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "8"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("8"))
+                        val pattern = intArrayOf(
+                            9000,
+                            4500,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            560,
+                            600,
+                            600,
+                            2000,
+                            300
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -139,7 +196,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "9"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("9"))
+                        val pattern = intArrayOf(
+                            9000,
+                            4500,
+                            560,
+                            1690,
+                            560,
+                            560,
+                            560,
+                            1690
+                        )  // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -148,9 +216,18 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "*"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("*"))
+                        val pattern = intArrayOf(
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            1690,
+                            9000,
+                            4500
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
             }
@@ -171,7 +248,18 @@ fun CalculatorApp() {
                         .background(color = MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "4"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("4"))
+                        val pattern = intArrayOf(
+                            560,
+                            560,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            1690
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -180,7 +268,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "5"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("5"))
+                        val pattern = intArrayOf(
+                            560,
+                            1690,
+                            560,
+                            1690,
+                            9000,
+                            4500,
+                            560,
+                            560
+                        )  // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -189,7 +288,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "6"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("6"))
+                        val pattern = intArrayOf(
+                            560,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            1690,
+                            9000
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -198,9 +308,18 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "-"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("-"))
+                        val pattern = intArrayOf(
+                            560,
+                            1690,
+                            9000,
+                            4500,
+                            560,
+                            560,
+                            560,
+                            1690
+                        )  // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
             }
@@ -221,7 +340,18 @@ fun CalculatorApp() {
                         .background(color = MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "1"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("1"))
+                        val pattern = intArrayOf(
+                            560,
+                            1690,
+                            560,
+                            560,
+                            560,
+                            560,
+                            9000,
+                            4500
+                        )// Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -230,7 +360,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "2"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("2"))
+                        val pattern = intArrayOf(
+                            4500,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            560,
+                            1690,
+                            9000
+                        )// Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -239,7 +380,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        result += "3"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("3"))
+                        val pattern = intArrayOf(
+                            560,
+                            1690,
+                            560,
+                            560,
+                            560,
+                            1690,
+                            9000,
+                            4500
+                        )  // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -248,9 +400,18 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) return@CalculatorButton
-                        else if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/'))
-                            result += "+"
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("+"))
+                        val pattern = intArrayOf(
+                            560,
+                            1690,
+                            9000,
+                            4500,
+                            560,
+                            1690,
+                            560,
+                            560
+                        )// Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
             }
@@ -272,7 +433,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(2f),
                     onClick = {
-                        result += "0"
+                        viewModel.calculatorEvents(CalculatorEvents.InputNumber("0"))
+                        val pattern = intArrayOf(
+                            560,
+                            560,
+                            560,
+                            1690,
+                            9000,
+                            4500,
+                            560,
+                            1690
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -281,12 +453,18 @@ fun CalculatorApp() {
                         .background(MediumGray)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) {
-                            return@CalculatorButton
-                        }
-
-                        if (result.lastOrNull() !in arrayOf('+', '-', '*', '.'))
-                            result += "."
+                        viewModel.calculatorEvents(CalculatorEvents.InputSymbol("."))
+                        val pattern = intArrayOf(
+                            9000,
+                            4500,
+                            560,
+                            560,
+                            560,
+                            560,
+                            560,
+                            1690
+                        ) // Example pattern, replace with your IR signal pattern
+                        irManager.transmit(40000, pattern)
                     }
                 )
                 CalculatorButton(
@@ -295,29 +473,27 @@ fun CalculatorApp() {
                         .background(shade_of_orange)
                         .weight(1f),
                     onClick = {
-                        if (result.isEmpty()) {
-                            // result.append("")
-                            return@CalculatorButton
-                        }
-                        if (result.lastOrNull() !in arrayOf('+', '-', '*', '.', '/')) {
-                            result = Calculation(result)
-                        }
+                        viewModel.calculatorEvents(CalculatorEvents.EqualButton)
+
+
+//                        if (authUnlock != "10")
+//                            authUnlock = viewModel.calculatorState.value.answer
+//                        if (authUnlock == "10") {
+//                            val pattern = intArrayOf(
+//                                560,
+//                                1690,
+//                                560,
+//                                1690,
+//                                560,
+//                                560,
+//                                9000,
+//                                4500
+//                            ) // Example pattern, replace with your IR signal pattern
+//                            irManager.transmit(40000, pattern)
+//                        }
                     }
                 )
             }
         }
     }
-}
-
-@Preview(backgroundColor = 0)
-@Composable
-fun prevCalculator() {
-
-    CalculatorApp()
-}
-
-private fun Calculation(text: String): String {
-    val eval = ExpressionBuilder(text).build()
-    val res = eval.evaluate()
-    return res.toInt().toString()
 }
